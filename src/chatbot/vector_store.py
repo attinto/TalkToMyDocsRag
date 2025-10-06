@@ -1,5 +1,5 @@
-from langchain.vectorstores import FAISS
-from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import os
 from dotenv import load_dotenv
@@ -27,6 +27,7 @@ def create_vector_store(documents):
     
     # Split the documents into chunks
     texts = text_splitter.split_documents(documents)
+    print(f"Number of documents after splitting: {len(texts)}")
 
     # Initialize the OpenAI embeddings
     embeddings = OpenAIEmbeddings(openai_api_key=api_key, chunk_size=1000)

@@ -8,7 +8,7 @@ def main():
     Main function to run the chatbot.
     """
     # Get the path to the book
-    book_path = "/Users/aletinto/Movies/gitRepos/TalkToMyDocsRag/src/book/historia_venezuela.txt"
+    book_path = "/Users/aletinto/Movies/gitRepos/TalkToMyDocsRag/src/book/peter_pan_book.txt"
 
     # Load the document
     print("Loading document...")
@@ -26,7 +26,7 @@ def main():
     print("Chatbot created. You can now ask questions.")
 
     # Ask a predefined question
-    query = "¿Que influencia tuvo Alemania en Venezuela?"
+    query = "who is peter pan?"
     print(f"You: {query}")
     answer = ask_question(qa_chain, query)
     print(f"Chatbot: {answer}")

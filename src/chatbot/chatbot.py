@@ -1,5 +1,5 @@
 from langchain.chains import RetrievalQA
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 import os
 from dotenv import load_dotenv
 
@@ -28,7 +28,7 @@ def create_chatbot(vector_store):
     qa_chain = RetrievalQA.from_chain_type(
         llm=llm,
         chain_type="map_reduce",
-        retriever=vector_store.as_retriever(search_kwargs={"k": 2}),
+        retriever=vector_store.as_retriever(search_kwargs={"k": 6}),
         return_source_documents=True
     )
 
@@ -44,5 +44,5 @@ def ask_question(qa_chain, query):
     if not query:
         raise ValueError("No query provided to ask a question.")
 
-    response = qa_chain({"query": query})
+    response = qa_chain.invoke({"query": query})
     return response["result"]
