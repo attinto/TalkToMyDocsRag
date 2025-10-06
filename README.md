@@ -18,7 +18,7 @@ Example with Peter Pan Book: How does Wendy's perception of Peter Pan change fro
 
 ## Features
 
-- **Multiple RAG Strategies**: Implements four distinct RAG pipelines out-of-the-box.
+- **Multiple RAG Strategies**: Implements five distinct RAG pipelines out-of-the-box.
 - **Flexible CLI**: A command-line interface built with Typer to easily run and compare one, many, or all strategies at once.
 - **Modular Architecture**: Designed with SOLID principles, making it easy to add new RAG strategies.
 - **Side-by-Side Comparison**: Displays results in a clean, formatted table for easy analysis.
@@ -29,6 +29,7 @@ Example with Peter Pan Book: How does Wendy's perception of Peter Pan change fro
 2.  **Sentence Window RAG**: A more precise method. It retrieves the single most relevant sentence and expands the context by including a few sentences before and after it (the "window").
 3.  **Parent Document RAG**: A hybrid approach. It searches over small, precise text chunks but retrieves their larger parent documents to provide the LLM with rich, complete context.
 4.  **Auto-merging RAG**: The most advanced strategy here. It retrieves many small chunks and, if several come from the same parent document, it "merges" them by retrieving the larger parent document instead. This is excellent for questions that require synthesizing information from multiple places.
+5.  **Hybrid Search RAG**: Combines two different search techniques: traditional keyword-based search (BM25) and modern semantic search (FAISS). This approach leverages the precision of keywords for specific terms and the contextual understanding of vectors for broader concepts, often leading to more relevant and robust retrieval results.
 
 ## Setup and Installation
 
@@ -80,3 +81,35 @@ python -m src.main "What did Wendy do with Peter's shadow?" -r basic -r sentence
 ```bash
 python -m src.main "How does Wendy's perception of Peter Pan change from their first meeting to the end of the story?" --all
 ```
+
+## More Notes on Advanced RAG Techniques
+
+Beyond the implemented strategies, the field of Retrieval-Augmented Generation is rich with advanced techniques to improve performance, accuracy, and efficiency. Below are some key concepts that can be explored to build even more sophisticated RAG systems.
+
+[Advanced RAG techniques](https://www.youtube.com/watch?v=sGvXO7CVwc0)
+
+### 1. The Importance of Context, Queries, and Metadata
+
+The quality of a RAG system's output is critically dependent on the quality of its input—both the user's query and the context it retrieves.
+
+-   **Chunking and Embedding**: The foundational step of any RAG system is breaking down large documents into smaller, manageable chunks. These chunks are then converted into vector embeddings and stored in a database. The effectiveness of this process is crucial; if the right information isn't in a chunk, it can never be retrieved.
+-   **Metadata is Key**: To enhance retrieval, each chunk should be enriched with metadata. This can include labels, categories, document IDs, or even the original question that a chunk might answer. Rich metadata allows for more powerful, filtered queries. For example, you could limit a search to chunks with a specific `document_id` or those tagged with a certain `category`, dramatically improving the chances of a precise semantic match. Specially if it is for an specific product or you can have an id that limit the chunks.
+-   **Storing Questions**: A powerful technique is to store user questions alongside the data chunks that answered them. This creates a direct link between a query and its relevant context, which can be used to fine-tune future retrievals.
+
+### 2. Database Choices for RAG
+
+While specialized vector databases (like FAISS, Pinecone, or Weaviate) are the most common choice for storing and querying embeddings, they are not the only option. Traditional relational databases are increasingly equipped with vector search capabilities.
+
+-   **PostgreSQL with `pgvector`**: You can use a robust, open-source database like PostgreSQL with the `pgvector` extension to handle both structured metadata and vector embeddings in the same place. This simplifies the tech stack and allows you to leverage the power of SQL for complex, metadata-based filtering alongside semantic search.
+
+### 3. Advanced Retrieval and Ranking Techniques
+
+Retrieval is not just about finding documents; it's about finding the *best* documents.
+
+-   **Re-ranking**: A common pattern is to use a fast, initial retriever (like BM25 or a basic vector search) to gather a large set of potentially relevant documents. Then, a second, more computationally intensive model (a "re-ranker" or a cross-encoder) is used to score and re-order this smaller set, pushing the most relevant documents to the top.
+-   **Scoring and Thresholds**: For even greater control, you can implement a scoring algorithm that assigns a relevance score to each retrieved chunk. The LLM would then only receive chunks that surpass a certain score threshold. This is a more advanced technique that can prevent irrelevant or low-quality context from ever reaching the final answer-generation step.
+
+### 4. Evaluation and Orchestration
+
+-   **Data-Driven Evaluation**: To objectively measure the quality of your RAG system, you can use data science techniques. This involves creating evaluation datasets with question-answer pairs and using metrics like context relevance, answer faithfulness, and overall accuracy to benchmark different strategies.
+-   **Multi-Step LLM Calls**: A single call to the LLM is not always enough. More complex workflows can involve multiple interactions. For instance, you could first ask an LLM to summarize each retrieved chunk. These summaries, being more concise, can then be fed into a final LLM call to synthesize the answer. This can improve the signal-to-noise ratio and help the model focus on the most critical information.

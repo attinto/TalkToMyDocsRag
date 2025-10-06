@@ -23,6 +23,12 @@
       "description": "Retrieves multiple chunks and recursively merges them into a larger, more coherent context.",
       "module": "src.chatbot.rags.auto_merging_rag",
       "enabled": true
+    },
+    "hybrid": {
+      "name": "Hybrid Search RAG",
+      "description": "Combines keyword-based search (BM25) and semantic search (FAISS) for retrieval.",
+      "module": "src.chatbot.rags.hybrid_search_rag",
+      "enabled": true
     }
   }
 }
