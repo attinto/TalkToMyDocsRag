@@ -3,16 +3,31 @@
 
 This project is a flexible and extensible tool for comparing different Retrieval-Augmented Generation (RAG) strategies. It allows you to ask a question against a source document and see how different RAG pipelines generate answers, making it easy to understand the trade-offs of each approach.
 
-python -m src.main "How does Wendy's perception of Peter Pan change from their first meeting to the end of the story?" --all
+python -m src.main "QUESTION HERE" --all
 
-Example with Peter Pan Book: How does Wendy's perception of Peter Pan change from their first meeting to the end of the story?
+python -m src.main "How does Captain Hook describe Peter Pan?" --all
+python -m src.main "How does the tone of Neverland change between Wendy’s first visit and her last?" --all
+python -m src.main "How does Captain Hook describe Peter Pan?" --all
 
-| **RAG Strategy**       | **Answer** |
-|-------------------------|------------|
-| **Basic RAG** | At first, Wendy sees Peter Pan as an exciting, magical, and heroic figure, eager for thrilling talks about their adventures. Over time, she notices Peter’s forgetfulness and lack of emotional growth—he cannot remember past adventures or people, like Captain Hook or Tinker Bell, showing that he never changes. By the end, Wendy realizes she must grow up while Peter remains unchanged, and she takes on a more maternal, wistful role, ultimately letting her daughter (and later granddaughter) go to Neverland in her place, accepting Peter’s unchanging nature and her own passage into adulthood. |
-| **Sentence Window RAG** | Wendy's perception of Peter Pan changes from seeing him as a playful and magical friend to realizing the dangers and limitations of his world. She goes from enjoying the adventures he offers to experiencing fear and uncertainty about his intentions, ultimately leading to a different understanding of him by the end of the story. Wendy's perception shifts from a carefree friendship to a more cautious and realistic view of Peter Pan and the world he inhabits. |
-| **Parent Document RAG** | Wendy's perception of Peter Pan changes from viewing him as a hero and a figure of fascination to realizing his forgetfulness and self-centeredness. She goes from admiring him for his adventurous spirit to being disappointed by his lack of memory and consideration for others. Ultimately, Wendy's view of Peter shifts from admiration to a more critical understanding of his character. |
-| **Auto-merging RAG** | Wendy's perception of Peter Pan changes from seeing him as a lovely boy clad in skeleton leaves and entrancing to feeling the fierce hatred and doomed flight due to Tinker Bell's jealousy. She initially saw him as a grown-up and gnashed his teeth at her, symbolizing a shift from innocence to realization of darker aspects of his character. Wendy's perception of Peter Pan evolves from a fantastical character to someone with complexities and tensions, ultimately leading to their parting ways due to Tinker Bell's malicious actions. |
+## 🧠 Answering question:  
+### **How does Captain Hook describe Peter Pan?**
+
+---
+
+### 📊 RAG Comparison Results
+
+| **RAG Strategy** | **Answer** |
+|------------------|------------|
+| **Basic RAG** | The provided context does not contain a direct description of Peter Pan by Captain Hook. It details Hook's interactions and actions regarding Peter, but does not include Hook's explicit words describing him. Therefore, I don't know how Captain Hook describes Peter Pan based on this context. |
+| **Sentence Window RAG** | Captain Hook describes Peter Pan as a "wonderful boy" during the guessing game, confirming that Peter is not ordinary but extraordinary. This description comes out when Hook asks if he is an "ordinary boy" and Peter answers "No!" and then affirms being a "wonderful boy." Hook is puzzled and impressed by Peter's uniqueness. |
+| **Parent Document RAG** | Captain Hook describes Peter Pan as "proud and insolent youth" and refers to him as his enemy, blaming him for his troubles. He also expresses his desire for revenge, saying, "Most of all...I want their captain, Peter Pan." Hook sees Peter as a formidable and personal adversary. |
+| **Auto-merging RAG** | Captain Hook describes Peter Pan as the captain he most wants to capture, calling him “proud and insolent youth” and blaming him for giving his hook a taste for him. Hook passionately declares Peter Pan is his arch enemy, saying, “’Twas he cut off my arm.” He sees Peter as his primary foe and refers to him in dark, threatening terms. |
+| **Hybrid Search RAG** | Captain Hook describes Peter Pan as the captain of the Lost Boys and his arch enemy, saying, "’Twas he cut off my arm." He refers to Peter as a "wonderful boy" rather than just an ordinary boy. Hook passionately expresses his desire for revenge against Peter, making it clear he views Peter as a formidable and infuriating adversary. |
+| **Query Expansion RAG** | Captain Hook is deeply tormented by Peter Pan's cockiness, which goads him to frenzy and makes his iron claw twitch. It is Peter’s cockiness—not his courage or appearance—that most disturbs and infuriates Hook. Hook views Peter as a "wonderful boy," but is primarily obsessed with his irritating self-confidence. |
+
+---
+
+📝 *Each RAG strategy retrieves and interprets slightly different nuances from the text, reflecting how retrieval context shapes model understanding.*
 
 
 
