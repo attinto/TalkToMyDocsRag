@@ -1,6 +1,8 @@
 
 # Talk To My Docs (RAG Comparison Tool)
 
+This project performs Retrieval-Augmented Generation (RAG) on the classic novel *Peter Pan*, allowing for a comparative analysis of various RAG strategies against a single, rich text source. Setup instructions are provided below.
+
 This project is a flexible and extensible tool for comparing different Retrieval-Augmented Generation (RAG) strategies. It allows you to ask a question against a source document and see how different RAG pipelines generate answers, making it easy to understand the trade-offs of each approach.
 
 python -m src.main "QUESTION HERE" --all
