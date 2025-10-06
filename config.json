@@ -29,6 +29,12 @@
       "description": "Combines keyword-based search (BM25) and semantic search (FAISS) for retrieval.",
       "module": "src.chatbot.rags.hybrid_search_rag",
       "enabled": true
+    },
+    "query_expansion": {
+      "name": "Query Expansion RAG",
+      "description": "Expands the user query into multiple variations to improve retrieval recall.",
+      "module": "src.chatbot.rags.query_expansion_rag",
+      "enabled": true
     }
   }
 }

@@ -18,7 +18,7 @@ Example with Peter Pan Book: How does Wendy's perception of Peter Pan change fro
 
 ## Features
 
-- **Multiple RAG Strategies**: Implements five distinct RAG pipelines out-of-the-box.
+- **Multiple RAG Strategies**: Implements six distinct RAG pipelines out-of-the-box.
 - **Flexible CLI**: A command-line interface built with Typer to easily run and compare one, many, or all strategies at once.
 - **Modular Architecture**: Designed with SOLID principles, making it easy to add new RAG strategies.
 - **Side-by-Side Comparison**: Displays results in a clean, formatted table for easy analysis.
@@ -30,6 +30,19 @@ Example with Peter Pan Book: How does Wendy's perception of Peter Pan change fro
 3.  **Parent Document RAG**: A hybrid approach. It searches over small, precise text chunks but retrieves their larger parent documents to provide the LLM with rich, complete context.
 4.  **Auto-merging RAG**: The most advanced strategy here. It retrieves many small chunks and, if several come from the same parent document, it "merges" them by retrieving the larger parent document instead. This is excellent for questions that require synthesizing information from multiple places.
 5.  **Hybrid Search RAG**: Combines two different search techniques: traditional keyword-based search (BM25) and modern semantic search (FAISS). This approach leverages the precision of keywords for specific terms and the contextual understanding of vectors for broader concepts, often leading to more relevant and robust retrieval results.
+6.  **Query Expansion RAG**: Uses an LLM to rewrite the user's initial question into several different variations. By searching for documents that match these expanded queries, this strategy increases the chances of finding relevant information, even if it's phrased differently from the original question.
+
+### A Note on Tunable Parameters
+
+Many of the RAG strategies implemented in this repository have parameters that can be tuned to optimize performance. These are located directly within each RAG's source file (e.g., `src/chatbot/rags/query_expansion_rag.py`).
+
+For example, in the **Query Expansion RAG**, a key parameter is the `expansion_prompt_template`. This template guides the LLM on how to generate the new queries. You can modify it to:
+
+-   Change the number of questions to generate.
+-   Alter the tone or style of the questions (e.g., make them more technical, creative, or simple).
+-   Instruct the LLM to perform other forms of expansion, like generating hypothetical answers.
+
+Experimenting with these parameters is a key part of finding the best RAG strategy for a specific use case.
 
 ## Setup and Installation
 
