@@ -18,7 +18,7 @@ Example with Peter Pan Book: How does Wendy's perception of Peter Pan change fro
 
 ## Features
 
-- **Multiple RAG Strategies**: Implements five distinct RAG pipelines out-of-the-box.
+- **Multiple RAG Strategies**: Implements six distinct RAG pipelines out-of-the-box.
 - **Flexible CLI**: A command-line interface built with Typer to easily run and compare one, many, or all strategies at once.
 - **Modular Architecture**: Designed with SOLID principles, making it easy to add new RAG strategies.
 - **Side-by-Side Comparison**: Displays results in a clean, formatted table for easy analysis.
@@ -30,6 +30,23 @@ Example with Peter Pan Book: How does Wendy's perception of Peter Pan change fro
 3.  **Parent Document RAG**: A hybrid approach. It searches over small, precise text chunks but retrieves their larger parent documents to provide the LLM with rich, complete context.
 4.  **Auto-merging RAG**: The most advanced strategy here. It retrieves many small chunks and, if several come from the same parent document, it "merges" them by retrieving the larger parent document instead. This is excellent for questions that require synthesizing information from multiple places.
 5.  **Hybrid Search RAG**: Combines two different search techniques: traditional keyword-based search (BM25) and modern semantic search (FAISS). This approach leverages the precision of keywords for specific terms and the contextual understanding of vectors for broader concepts, often leading to more relevant and robust retrieval results.
+6.  **Query Expansion RAG**: Uses an LLM to rewrite the user's initial question into several different variations. By searching for documents that match these expanded queries, this strategy increases the chances of finding relevant information, even if it's phrased differently from the original question.
+
+## Centralized Configuration
+
+To make the RAG pipelines more flexible and easier to experiment with, all tunable parameters have been centralized in `src/chatbot/rags/rag_config.py`.
+
+This file allows you to modify various aspects of each RAG strategy without touching the core logic. You can adjust:
+
+-   **`GENERAL_CONFIG`**: Parameters shared across all RAGs, such as the `file_path` of the source document and the `model_name` for the LLM.
+-   **Individual RAG Configurations**: Each RAG (e.g., `BASIC_RAG_CONFIG`, `QUERY_EXPANSION_RAG_CONFIG`) has its own dictionary containing specific parameters like `chunk_size`, `chunk_overlap`, `prompt_template`, `window_size`, `ensemble_weights`, and `expansion_prompt_template`.
+
+**How to Modify:**
+
+Simply open `src/chatbot/rags/rag_config.py` and change the values of the desired parameters. Detailed comments within the file explain the purpose of each parameter and how it affects the RAG pipeline.
+
+Experimenting with these configurations is highly encouraged to find the optimal settings for your specific use case and data.
+
 
 ## Setup and Installation
 

@@ -38,9 +38,7 @@ from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.documents import Document
 
-# --- Constants and Configuration ---
-FILE_PATH = "src/data/peter_pan_book.txt"
-LLM_MODEL = "gpt-3.5-turbo"
+from .rag_config import GENERAL_CONFIG, SENTENCE_WINDOW_RAG_CONFIG
 
 
 class SentenceWindowRAGPipeline:
@@ -48,7 +46,7 @@ class SentenceWindowRAGPipeline:
     Encapsulates the logic for a Sentence Window RAG pipeline.
     """
 
-    def __init__(self, document_path: str = FILE_PATH, window_size: int = 2):
+    def __init__(self, document_path: str = GENERAL_CONFIG["file_path"], window_size: int = SENTENCE_WINDOW_RAG_CONFIG["window_size"]):
         """
         Initializes the pipeline.
 
@@ -133,19 +131,9 @@ class SentenceWindowRAGPipeline:
         # The retriever will fetch the top_k most relevant sentences.
         retriever = self.vector_store.as_retriever(search_kwargs={"k": 3})
 
-        prompt_template = """
-You are an assistant for question-answering tasks.
-Use the following pieces of retrieved context to answer the question.
-If you don't know the answer, just say that you don't know.
-Use three sentences maximum and keep the answer concise.
+        prompt = ChatPromptTemplate.from_template(SENTENCE_WINDOW_RAG_CONFIG["prompt_template"])
 
-Context: {context}
-Question: {question}
-Answer:
-"""
-        prompt = ChatPromptTemplate.from_template(prompt_template)
-
-        llm = ChatOpenAI(model_name=LLM_MODEL)
+        llm = ChatOpenAI(model_name=GENERAL_CONFIG["model_name"])
 
         # This sub-chain is responsible for fetching and formatting the context.
         # 1. `itemgetter("question")`: Extracts the question string from the input dict.

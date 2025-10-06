@@ -43,9 +43,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain.storage import InMemoryStore
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-# --- Constants and Configuration ---
-FILE_PATH = "src/data/peter_pan_book.txt"
-LLM_MODEL = "gpt-3.5-turbo"
+from .rag_config import GENERAL_CONFIG, AUTO_MERGING_RAG_CONFIG
 
 
 class AutoMergingRAGPipeline:
@@ -53,7 +51,7 @@ class AutoMergingRAGPipeline:
     Encapsulates the logic for an Auto-merging RAG pipeline.
     """
 
-    def __init__(self, document_path: str = FILE_PATH, merge_threshold: int = 3):
+    def __init__(self, document_path: str = GENERAL_CONFIG["file_path"], merge_threshold: int = AUTO_MERGING_RAG_CONFIG["merge_threshold"]):
         """
         Initializes the pipeline.
 
@@ -76,8 +74,8 @@ class AutoMergingRAGPipeline:
         """
         docs = TextLoader(document_path).load()
 
-        parent_splitter = RecursiveCharacterTextSplitter(chunk_size=8000, chunk_overlap=200)
-        child_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+        parent_splitter = RecursiveCharacterTextSplitter(chunk_size=AUTO_MERGING_RAG_CONFIG["parent_chunk_size"], chunk_overlap=200)
+        child_splitter = RecursiveCharacterTextSplitter(chunk_size=AUTO_MERGING_RAG_CONFIG["child_chunk_size"], chunk_overlap=100)
 
         parent_docs = parent_splitter.split_documents(docs)
         parent_ids = [str(uuid.uuid4()) for _ in parent_docs]
@@ -125,11 +123,9 @@ class AutoMergingRAGPipeline:
         # Retrieve a larger number of docs to give the merging logic more to work with.
         retriever = self.vector_store.as_retriever(search_kwargs={"k": 20})
 
-        prompt_template = """... (same as before) ..."""
-        prompt = ChatPromptTemplate.from_template(prompt_template.replace("... (same as before) ...",
-            "You are an assistant for question-answering tasks. Use the following pieces of retrieved context to answer the question. If you don't know the answer, just say that you don't know. Use three sentences maximum and keep the answer concise.\n\nContext: {context}\nQuestion: {question}\nAnswer:"))
+        prompt = ChatPromptTemplate.from_template(AUTO_MERGING_RAG_CONFIG["prompt_template"])
 
-        llm = ChatOpenAI(model_name=LLM_MODEL)
+        llm = ChatOpenAI(model_name=GENERAL_CONFIG["model_name"])
 
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)
