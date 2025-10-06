@@ -48,27 +48,28 @@ def run(
 
     console.print(f"\n[bold]Answering question:[/] {question}\n")
 
-    for rag_key in rags_to_run:
+    num_rags_to_run = len(rags_to_run)
+    for i, rag_key in enumerate(rags_to_run):
         rag_info = config["rags"][rag_key]
         rag_name = rag_info.get("name", rag_key)
         module_name = rag_info.get("module")
+        is_last_row = (i == num_rags_to_run - 1)
+        answer = ""
 
         if not module_name:
-            table.add_row(rag_name, "[italic red]Module not configured...[/]")
-            continue
+            answer = "[italic red]Module not configured...[/]"
+        else:
+            try:
+                # Dynamically import the module and execute the RAG
+                rag_module = importlib.import_module(module_name)
+                answer = rag_module.execute_rag(question)
+            except ImportError:
+                answer = f"[italic red]Could not import module: {module_name}[/]"
+            except Exception as e:
+                answer = f"[italic red]An error occurred: {e}[/]"
 
-        try:
-            # Dynamically import the module and execute the RAG
-            rag_module = importlib.import_module(module_name)
-            # We assume each module has an 'execute_rag' function.
-            # This function takes the question and returns the answer.
-            answer = rag_module.execute_rag(question)
-            table.add_row(rag_name, answer)
-
-        except ImportError:
-            table.add_row(rag_name, f"[italic red]Could not import module: {module_name}[/]")
-        except Exception as e:
-            table.add_row(rag_name, f"[italic red]An error occurred: {e}[/]")
+        # Add a separator line after every row except the last one.
+        table.add_row(rag_name, answer, end_section=not is_last_row)
 
     console.print(table)
 
