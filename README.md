@@ -3,6 +3,35 @@
 
 This project is a flexible and extensible tool for comparing different Retrieval-Augmented Generation (RAG) strategies. It allows you to ask a question against a source document and see how different RAG pipelines generate answers, making it easy to understand the trade-offs of each approach.
 
+python -m src.main "How does Wendy's perception of Peter Pan change from their first meeting to the end of the story?" --all
+
+Example with Peter Pan Book: How does Wendy's perception of Peter Pan change from their first meeting to the end of the story?
+
+                                                                                           RAG Comparison Results                                                                                            
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ RAG Strategy        ┃ Answer                                                                                                                                                                              ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Basic RAG           │ At first, Wendy sees Peter Pan as an exciting, magical, and heroic figure, eager for thrilling talks about their adventures. Over time, she notices Peter’s forgetfulness and lack  │
+│                     │ of emotional growth—he cannot remember past adventures or people, like Captain Hook or Tinker Bell, showing that he never changes. By the end, Wendy realizes she must grow up      │
+│                     │ while Peter remains unchanged, and she takes on a more maternal, wistful role, ultimately letting her daughter (and later granddaughter) go to Neverland in her place, accepting    │
+│                     │ Peter’s unchanging nature and her own passage into adulthood.                                                                                                                       │
+├─────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Sentence Window RAG │ Wendy's perception of Peter Pan changes from seeing him as a playful and magical friend to realizing the dangers and limitations of his world. She goes from enjoying the           │
+│                     │ adventures he offers to experiencing fear and uncertainty about his intentions, ultimately leading to a different understanding of him by the end of the story. Wendy's perception  │
+│                     │ shifts from a carefree friendship to a more cautious and realistic view of Peter Pan and the world he inhabits.                                                                     │
+├─────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Parent Document RAG │ Wendy's perception of Peter Pan changes from viewing him as a hero and a figure of fascination to realizing his forgetfulness and self-centeredness. She goes from admiring him for │
+│                     │ his adventurous spirit to being disappointed by his lack of memory and consideration for others. Ultimately, Wendy's view of Peter shifts from admiration to a more critical        │
+│                     │ understanding of his character.                                                                                                                                                     │
+├─────────────────────┼─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┤
+│ Auto-merging RAG    │ Wendy's perception of Peter Pan changes from seeing him as a lovely boy clad in skeleton leaves and entrancing to feeling the fierce hatred and doomed flight due to Tinker Bell's  │
+│                     │ jealousy. She initially saw him as a grown-up and gnashed his teeth at her, symbolizing a shift from innocence to realization of darker aspects of his character. Wendy's           │
+│                     │ perception of Peter Pan evolves from a fantastical character to someone with complexities and tensions, ultimately leading to their parting ways due to Tinker Bell's malicious     │
+│                     │ actions.                                                                                                                                                                            │
+└─────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+
+
+
 ## Features
 
 - **Multiple RAG Strategies**: Implements four distinct RAG pipelines out-of-the-box.
@@ -67,10 +96,3 @@ python -m src.main "What did Wendy do with Peter's shadow?" -r basic -r sentence
 ```bash
 python -m src.main "How does Wendy's perception of Peter Pan change from their first meeting to the end of the story?" --all
 ```
-
-## Example Output
-
-Below is an example of the output when running the tool with all strategies.
-
-> <!-- PASTE YOUR TERMINAL OUTPUT HERE -->
-
