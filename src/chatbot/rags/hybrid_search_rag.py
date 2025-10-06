@@ -32,9 +32,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_community.retrievers import BM25Retriever
 from langchain.retrievers import EnsembleRetriever
 
-# --- Constants and Configuration ---
-FILE_PATH = "src/data/peter_pan_book.txt"
-LLM_MODEL = "gpt-4.1-2025-04-14"
+from .rag_config import GENERAL_CONFIG, HYBRID_SEARCH_RAG_CONFIG
 
 
 class HybridSearchRAGPipeline:
@@ -42,7 +40,7 @@ class HybridSearchRAGPipeline:
     Encapsulates the logic for a hybrid search RAG pipeline.
     """
 
-    def __init__(self, document_path: str = FILE_PATH):
+    def __init__(self, document_path: str = GENERAL_CONFIG["file_path"]):
         """
         Initializes the pipeline.
         """
@@ -59,7 +57,10 @@ class HybridSearchRAGPipeline:
         """
         loader = TextLoader(self.document_path)
         documents = loader.load()
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=HYBRID_SEARCH_RAG_CONFIG["chunk_size"],
+            chunk_overlap=HYBRID_SEARCH_RAG_CONFIG["chunk_overlap"]
+        )
         return text_splitter.split_documents(documents)
 
     def _create_chain(self):
@@ -78,23 +79,13 @@ class HybridSearchRAGPipeline:
         # Create the ensemble retriever
         ensemble_retriever = EnsembleRetriever(
             retrievers=[bm25_retriever, faiss_retriever],
-            weights=[0.5, 0.5],
+            weights=HYBRID_SEARCH_RAG_CONFIG["ensemble_weights"],
             search_type="mmr"
         )
 
-        prompt_template = """
-        You are an assistant for question-answering tasks.
-        Use the following pieces of retrieved context to answer the question.
-        If you don't know the answer, just say that you don't know.
-        Use three sentences maximum and keep the answer concise.
+        prompt = ChatPromptTemplate.from_template(HYBRID_SEARCH_RAG_CONFIG["prompt_template"])
 
-        Context: {context}
-        Question: {question}
-        Answer:
-        """
-        prompt = ChatPromptTemplate.from_template(prompt_template)
-
-        llm = ChatOpenAI(model_name=LLM_MODEL)
+        llm = ChatOpenAI(model_name=GENERAL_CONFIG["model_name"])
 
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)

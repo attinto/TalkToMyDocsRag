@@ -38,9 +38,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
-# --- Constants and Configuration ---
-FILE_PATH = "src/data/peter_pan_book.txt"
-LLM_MODEL = "gpt-3.5-turbo"
+from .rag_config import GENERAL_CONFIG, PARENT_DOCUMENT_RAG_CONFIG
 
 
 class ParentDocumentRAGPipeline:
@@ -48,7 +46,7 @@ class ParentDocumentRAGPipeline:
     Encapsulates the logic for a Parent Document RAG pipeline.
     """
 
-    def __init__(self, document_path: str = FILE_PATH):
+    def __init__(self, document_path: str = GENERAL_CONFIG["file_path"]):
         """
         Initializes the pipeline by setting up the retriever and the LCEL chain.
         """
@@ -69,11 +67,11 @@ class ParentDocumentRAGPipeline:
         # --- Splitter Configuration (Parameter Tuning) ---
         # This splitter creates the Parent Documents. These should be large enough
         # to provide complete context for any child chunk within them.
-        parent_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
+        parent_splitter = RecursiveCharacterTextSplitter(chunk_size=PARENT_DOCUMENT_RAG_CONFIG["parent_chunk_size"], chunk_overlap=200)
 
         # This splitter creates the Child Documents. These are the small, precise chunks
         # that will be embedded and searched over.
-        child_splitter = RecursiveCharacterTextSplitter(chunk_size=400, chunk_overlap=50)
+        child_splitter = RecursiveCharacterTextSplitter(chunk_size=PARENT_DOCUMENT_RAG_CONFIG["child_chunk_size"], chunk_overlap=50)
 
         # The vector store to use for indexing the child documents.
         # FAISS cannot be initialized empty, so we create it with a dummy text.
@@ -99,19 +97,9 @@ class ParentDocumentRAGPipeline:
         Creates the LCEL chain. This is very similar to the basic RAG chain,
         as the ParentDocumentRetriever handles the complex logic.
         """
-        prompt_template = """
-You are an assistant for question-answering tasks.
-Use the following pieces of retrieved context to answer the question.
-If you don't know the answer, just say that you don't know.
-Use three sentences maximum and keep the answer concise.
+        prompt = ChatPromptTemplate.from_template(PARENT_DOCUMENT_RAG_CONFIG["prompt_template"])
 
-Context: {context}
-Question: {question}
-Answer:
-"""
-        prompt = ChatPromptTemplate.from_template(prompt_template)
-
-        llm = ChatOpenAI(model_name=LLM_MODEL)
+        llm = ChatOpenAI(model_name=GENERAL_CONFIG["model_name"])
 
         def format_docs(docs):
             return "\n\n".join(doc.page_content for doc in docs)

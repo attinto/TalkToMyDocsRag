@@ -29,13 +29,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
-# --- Constants and Configuration ---
-# It's good practice to define file paths and model names as constants.
-# This makes them easy to find and change.
-FILE_PATH = "src/data/peter_pan_book.txt"
-# We use gpt-3.5-turbo as it provides a good balance of performance and cost.
-# For higher quality answers, you could switch to "gpt-4-turbo".
-LLM_MODEL = "gpt-4.1-2025-04-14"
+from .rag_config import GENERAL_CONFIG, BASIC_RAG_CONFIG
 
 
 class BasicRAGPipeline:
@@ -45,7 +39,7 @@ class BasicRAGPipeline:
     document loading to answer generation.
     """
 
-    def __init__(self, document_path: str = FILE_PATH):
+    def __init__(self, document_path: str = GENERAL_CONFIG["file_path"]):
         """
         Initializes the pipeline.
 
@@ -77,7 +71,10 @@ class BasicRAGPipeline:
         # `chunk_overlap`: Defines how many characters overlap between adjacent chunks.
         #   - This is crucial to ensure that a sentence or idea isn't awkwardly split between two chunks.
         #   - A common value is 200, or 10-20% of the chunk_size.
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=BASIC_RAG_CONFIG["chunk_size"],
+            chunk_overlap=BASIC_RAG_CONFIG["chunk_overlap"]
+        )
         return text_splitter.split_documents(documents)
 
     def _create_vector_store(self):
@@ -103,19 +100,9 @@ class BasicRAGPipeline:
         # The prompt template is key to guiding the LLM.
         # It instructs the model to answer the question based *only* on the provided context.
         # This helps prevent the model from using its pre-trained knowledge (hallucinating).
-        prompt_template = """
-You are an assistant for question-answering tasks.
-Use the following pieces of retrieved context to answer the question.
-If you don't know the answer, just say that you don't know.
-Use three sentences maximum and keep the answer concise.
+        prompt = ChatPromptTemplate.from_template(BASIC_RAG_CONFIG["prompt_template"])
 
-Context: {context}
-Question: {question}
-Answer:
-"""
-        prompt = ChatPromptTemplate.from_template(prompt_template)
-
-        llm = ChatOpenAI(model_name=LLM_MODEL)
+        llm = ChatOpenAI(model_name=GENERAL_CONFIG["model_name"])
 
         # This helper function formats the retrieved documents into a single string.
         def format_docs(docs):

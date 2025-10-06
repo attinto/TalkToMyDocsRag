@@ -32,17 +32,21 @@ Example with Peter Pan Book: How does Wendy's perception of Peter Pan change fro
 5.  **Hybrid Search RAG**: Combines two different search techniques: traditional keyword-based search (BM25) and modern semantic search (FAISS). This approach leverages the precision of keywords for specific terms and the contextual understanding of vectors for broader concepts, often leading to more relevant and robust retrieval results.
 6.  **Query Expansion RAG**: Uses an LLM to rewrite the user's initial question into several different variations. By searching for documents that match these expanded queries, this strategy increases the chances of finding relevant information, even if it's phrased differently from the original question.
 
-### A Note on Tunable Parameters
+## Centralized Configuration
 
-Many of the RAG strategies implemented in this repository have parameters that can be tuned to optimize performance. These are located directly within each RAG's source file (e.g., `src/chatbot/rags/query_expansion_rag.py`).
+To make the RAG pipelines more flexible and easier to experiment with, all tunable parameters have been centralized in `src/chatbot/rags/rag_config.py`.
 
-For example, in the **Query Expansion RAG**, a key parameter is the `expansion_prompt_template`. This template guides the LLM on how to generate the new queries. You can modify it to:
+This file allows you to modify various aspects of each RAG strategy without touching the core logic. You can adjust:
 
--   Change the number of questions to generate.
--   Alter the tone or style of the questions (e.g., make them more technical, creative, or simple).
--   Instruct the LLM to perform other forms of expansion, like generating hypothetical answers.
+-   **`GENERAL_CONFIG`**: Parameters shared across all RAGs, such as the `file_path` of the source document and the `model_name` for the LLM.
+-   **Individual RAG Configurations**: Each RAG (e.g., `BASIC_RAG_CONFIG`, `QUERY_EXPANSION_RAG_CONFIG`) has its own dictionary containing specific parameters like `chunk_size`, `chunk_overlap`, `prompt_template`, `window_size`, `ensemble_weights`, and `expansion_prompt_template`.
 
-Experimenting with these parameters is a key part of finding the best RAG strategy for a specific use case.
+**How to Modify:**
+
+Simply open `src/chatbot/rags/rag_config.py` and change the values of the desired parameters. Detailed comments within the file explain the purpose of each parameter and how it affects the RAG pipeline.
+
+Experimenting with these configurations is highly encouraged to find the optimal settings for your specific use case and data.
+
 
 ## Setup and Installation
 
