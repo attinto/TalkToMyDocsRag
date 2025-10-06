@@ -9,12 +9,12 @@ python -m src.main "How does Captain Hook describe Peter Pan?" --all
 python -m src.main "How does the tone of Neverland change between Wendy’s first visit and her last?" --all
 python -m src.main "How does Captain Hook describe Peter Pan?" --all
 
-## 🧠 Answering question:  
+## Answering question:  
 ### **How does Captain Hook describe Peter Pan?**
 
 ---
 
-### 📊 RAG Comparison Results
+### RAG Comparison Results
 
 | **RAG Strategy** | **Answer** |
 |------------------|------------|
@@ -27,7 +27,7 @@ python -m src.main "How does Captain Hook describe Peter Pan?" --all
 
 ---
 
-📝 *Each RAG strategy retrieves and interprets slightly different nuances from the text, reflecting how retrieval context shapes model understanding.*
+*Each RAG strategy retrieves and interprets slightly different nuances from the text, reflecting how retrieval context shapes model understanding.*
 
 
 
