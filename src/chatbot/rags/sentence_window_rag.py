@@ -159,20 +159,38 @@ class SentenceWindowRAGPipeline:
         )
         return chain
 
-    def invoke(self, question: str) -> str:
+    def invoke(self, question: str) -> dict:
         """
         Invokes the RAG chain with a specific question.
+
+        Returns:
+            dict: A dictionary containing the answer and the retrieved context.
         """
-        return self.chain.invoke({"question": question})
+        result = self.chain.invoke({"question": question})
+        # The context is already part of the chain's execution, but we need to retrieve it separately for ragas
+        context_docs = self.vector_store.similarity_search(question)
+        context = self._get_window_context(context_docs)
+        return {"answer": result, "context": context}
 
 
 # --- Entry point for the CLI ---
-def execute_rag(question: str) -> str:
+def execute_rag(question: str) -> dict:
     """
     Initializes and runs the Sentence Window RAG pipeline.
+
+    Returns:
+        dict: A dictionary containing the answer and the retrieved context.
     """
+    # Module-level cache for the pipeline to prevent repeated heavy setup
+    global _SENTENCE_PIPELINE
     try:
-        pipeline = SentenceWindowRAGPipeline()
-        return pipeline.invoke(question)
+        _SENTENCE_PIPELINE
+    except NameError:
+        _SENTENCE_PIPELINE = None
+
+    try:
+        if _SENTENCE_PIPELINE is None:
+            _SENTENCE_PIPELINE = SentenceWindowRAGPipeline()
+        return _SENTENCE_PIPELINE.invoke(question)
     except Exception as e:
-        return f"An error occurred in the Sentence Window RAG pipeline: {e}"
+        return {"answer": f"An error occurred in the Sentence Window RAG pipeline: {e}", "context": []}

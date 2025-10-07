@@ -20,6 +20,8 @@ This module implements a straightforward Retrieval-Augmented Generation (RAG) pi
 """
 
 import os
+import logging
+import time
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
@@ -30,6 +32,9 @@ from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
 
 from .rag_config import GENERAL_CONFIG, BASIC_RAG_CONFIG
+
+# Logger for this module
+logger = logging.getLogger(__name__)
 
 
 class BasicRAGPipeline:
@@ -50,10 +55,17 @@ class BasicRAGPipeline:
         # Ensure the OPENAI_API_KEY environment variable is set.
         if not os.getenv("OPENAI_API_KEY"):
             raise ValueError("OPENAI_API_KEY environment variable not set.")
-
         self.document_path = document_path
+        logger.info("Initializing BasicRAGPipeline with document_path=%s", document_path)
+        start = time.time()
         self.vector_store = self._create_vector_store()
+        vs_time = time.time() - start
+        logger.info("Vector store created in %.2fs", vs_time)
+
+        start = time.time()
         self.chain = self._create_chain()
+        chain_time = time.time() - start
+        logger.info("Chain created in %.2fs", chain_time)
 
     def _load_and_split_documents(self):
         """
@@ -73,7 +85,7 @@ class BasicRAGPipeline:
         #   - A common value is 200, or 10-20% of the chunk_size.
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=BASIC_RAG_CONFIG["chunk_size"],
-            chunk_overlap=BASIC_RAG_CONFIG["chunk_overlap"]
+            chunk_overlap=BASIC_RAG_CONFIG["chunk_overlap"],
         )
         return text_splitter.split_documents(documents)
 
@@ -83,11 +95,15 @@ class BasicRAGPipeline:
         This involves embedding the text chunks and storing them in FAISS.
         """
         docs = self._load_and_split_documents()
+        logger.info("Loaded and split documents: %d chunks", len(docs))
+
         # OpenAIEmbeddings is a popular choice for generating high-quality text embeddings.
         embeddings = OpenAIEmbeddings()
         # FAISS is a fast, local vector store. It's great for getting started without a database.
         # `from_documents` is a convenience method that handles embedding and indexing in one step.
+        t0 = time.time()
         vector_store = FAISS.from_documents(docs, embeddings)
+        logger.info("FAISS.from_documents finished in %.2fs", time.time() - t0)
         return vector_store
 
     def _create_chain(self):
@@ -119,14 +135,14 @@ class BasicRAGPipeline:
         # 3. `| llm`: The formatted prompt is passed to the language model.
         # 4. `| StrOutputParser()`: The model's output (a ChatMessage) is converted to a simple string.
         chain = (
-            {"context": retriever | format_docs, "question": RunnablePassthrough()}
+            {"context": retriever, "question": RunnablePassthrough()}
             | prompt
             | llm
             | StrOutputParser()
         )
         return chain
 
-    def invoke(self, question: str) -> str:
+    def invoke(self, question: str) -> dict:
         """
         Invokes the RAG chain with a specific question.
 
@@ -134,15 +150,37 @@ class BasicRAGPipeline:
             question (str): The user's question.
 
         Returns:
-            str: The generated answer.
+            dict: A dictionary containing the answer and the retrieved context.
         """
-        return self.chain.invoke(question)
+        logger.info("Invoking BasicRAGPipeline for question: %s", question if len(question) < 200 else question[:200] + "...")
+
+        t0 = time.time()
+        docs = self.vector_store.similarity_search(question)
+        retrieval_time = time.time() - t0
+        logger.info("Retrieved %d documents in %.3fs", len(docs), retrieval_time)
+
+        # Format documents into a single context string (same logic as format_docs)
+        context_str = "\n\n".join(doc.page_content for doc in docs)
+
+        # Pass the precomputed context into the chain to avoid retriever running again
+        t1 = time.time()
+        result = self.chain.invoke({"question": question, "context": context_str})
+        llm_time = time.time() - t1
+        logger.info("LLM chain invoked in %.3fs", llm_time)
+
+        # Log a short preview of the answer
+        preview = str(result)
+        if len(preview) > 200:
+            preview = preview[:200] + "..."
+        logger.debug("Answer preview: %s", preview)
+
+        return {"answer": result, "context": docs}
 
 
 # --- Entry point for the CLI ---
 # This function is called by `main.py`. It acts as an adapter between the
 # generic CLI and our specific RAG implementation.
-def execute_rag(question: str) -> str:
+def execute_rag(question: str) -> dict:
     """
     Initializes and runs the Basic RAG pipeline.
 
@@ -150,12 +188,19 @@ def execute_rag(question: str) -> str:
         question (str): The question to be answered.
 
     Returns:
-        str: The answer from the RAG pipeline.
+        dict: A dictionary containing the answer and the retrieved context.
     """
+    # Use a module-level cached pipeline to avoid rebuilding embeddings/vectorstore on every call
+    global _BASIC_PIPELINE
     try:
-        pipeline = BasicRAGPipeline()
-        return pipeline.invoke(question)
+        _BASIC_PIPELINE
+    except NameError:
+        _BASIC_PIPELINE = None
+
+    try:
+        if _BASIC_PIPELINE is None:
+            _BASIC_PIPELINE = BasicRAGPipeline()
+        return _BASIC_PIPELINE.invoke(question)
     except Exception as e:
-        # Return a helpful error message if something goes wrong.
-        return f"An error occurred in the Basic RAG pipeline: {e}"
+        return {"answer": f"An error occurred in the Basic RAG pipeline: {e}", "context": []}
 

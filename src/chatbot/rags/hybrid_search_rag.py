@@ -91,28 +91,54 @@ class HybridSearchRAGPipeline:
             return "\n\n".join(doc.page_content for doc in docs)
 
         chain = (
-            {"context": ensemble_retriever | format_docs, "question": RunnablePassthrough()}
+            {"context": ensemble_retriever, "question": RunnablePassthrough()}
             | prompt
             | llm
             | StrOutputParser()
         )
         return chain
 
-    def invoke(self, question: str) -> str:
+    def invoke(self, question: str) -> dict:
         """
         Invokes the RAG chain with a specific question.
+
+        Returns:
+            dict: A dictionary containing the answer and the retrieved context.
         """
-        return self.chain.invoke(question)
+        result = self.chain.invoke(question)
+        # The context is already part of the chain's execution, but we need to retrieve it separately for ragas
+        embeddings = OpenAIEmbeddings()
+        faiss_vectorstore = FAISS.from_documents(self.docs, embeddings)
+        faiss_retriever = faiss_vectorstore.as_retriever(search_kwargs={"k": 5})
+        bm25_retriever = BM25Retriever.from_documents(self.docs)
+        bm25_retriever.k = 5
+        ensemble_retriever = EnsembleRetriever(
+            retrievers=[bm25_retriever, faiss_retriever],
+            weights=HYBRID_SEARCH_RAG_CONFIG["ensemble_weights"],
+            search_type="mmr"
+        )
+        context = ensemble_retriever.get_relevant_documents(question)
+        return {"answer": result, "context": context}
 
 
 # --- Entry point for the CLI ---
-def execute_rag(question: str) -> str:
+def execute_rag(question: str) -> dict:
     """
     Initializes and runs the Hybrid Search RAG pipeline.
+
+    Returns:
+        dict: A dictionary containing the answer and the retrieved context.
     """
+    global _HYBRID_PIPELINE
     try:
-        pipeline = HybridSearchRAGPipeline()
-        return pipeline.invoke(question)
+        _HYBRID_PIPELINE
+    except NameError:
+        _HYBRID_PIPELINE = None
+
+    try:
+        if _HYBRID_PIPELINE is None:
+            _HYBRID_PIPELINE = HybridSearchRAGPipeline()
+        return _HYBRID_PIPELINE.invoke(question)
     except Exception as e:
-        return f"An error occurred in the Hybrid Search RAG pipeline: {e}"
+        return {"answer": f"An error occurred in the Hybrid Search RAG pipeline: {e}", "context": []}
 

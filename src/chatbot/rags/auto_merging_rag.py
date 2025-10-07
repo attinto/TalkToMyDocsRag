@@ -137,7 +137,7 @@ class AutoMergingRAGPipeline:
 
         chain = (
             RunnablePassthrough.assign(
-                context=itemgetter("question") | retrieval_and_merging_chain | format_docs
+                context=itemgetter("question") | retrieval_and_merging_chain
             )
             | prompt
             | llm
@@ -145,14 +145,26 @@ class AutoMergingRAGPipeline:
         )
         return chain
 
-    def invoke(self, question: str) -> str:
-        return self.chain.invoke({"question": question})
+    def invoke(self, question: str) -> dict:
+        result = self.chain.invoke({"question": question})
+        # The context is already part of the chain's execution, but we need to retrieve it separately for ragas
+        retriever = self.vector_store.as_retriever(search_kwargs={"k": 20})
+        context_docs = retriever.get_relevant_documents(question)
+        context = self._auto_merge_retrieved_documents(context_docs)
+        return {"answer": result, "context": context}
 
 
 # --- Entry point for the CLI ---
-def execute_rag(question: str) -> str:
+def execute_rag(question: str) -> dict:
+    global _AUTO_MERGE_PIPELINE
     try:
-        pipeline = AutoMergingRAGPipeline()
-        return pipeline.invoke(question)
+        _AUTO_MERGE_PIPELINE
+    except NameError:
+        _AUTO_MERGE_PIPELINE = None
+
+    try:
+        if _AUTO_MERGE_PIPELINE is None:
+            _AUTO_MERGE_PIPELINE = AutoMergingRAGPipeline()
+        return _AUTO_MERGE_PIPELINE.invoke(question)
     except Exception as e:
-        return f"An error occurred in the Auto-merging RAG pipeline: {e}"
+        return {"answer": f"An error occurred in the Auto-merging RAG pipeline: {e}", "context": []}

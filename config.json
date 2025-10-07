@@ -3,37 +3,37 @@
     "basic": {
       "name": "Basic RAG",
       "description": "A simple retrieve-and-generate pipeline.",
-      "module": "src.chatbot.rags.basic_rag",
+  "module": "chatbot.rags.basic_rag",
       "enabled": true
     },
     "sentence": {
       "name": "Sentence Window RAG",
       "description": "Retrieves a single sentence and provides context of surrounding sentences to the LLM.",
-      "module": "src.chatbot.rags.sentence_window_rag",
+  "module": "chatbot.rags.sentence_window_rag",
       "enabled": true
     },
     "parent": {
       "name": "Parent Document RAG",
       "description": "Retrieves smaller chunks but provides the full parent document to the LLM.",
-      "module": "src.chatbot.rags.parent_document_rag",
+  "module": "chatbot.rags.parent_document_rag",
       "enabled": true
     },
     "merging": {
       "name": "Auto-merging RAG",
       "description": "Retrieves multiple chunks and recursively merges them into a larger, more coherent context.",
-      "module": "src.chatbot.rags.auto_merging_rag",
+  "module": "chatbot.rags.auto_merging_rag",
       "enabled": true
     },
     "hybrid": {
       "name": "Hybrid Search RAG",
       "description": "Combines keyword-based search (BM25) and semantic search (FAISS) for retrieval.",
-      "module": "src.chatbot.rags.hybrid_search_rag",
+  "module": "chatbot.rags.hybrid_search_rag",
       "enabled": true
     },
     "query_expansion": {
       "name": "Query Expansion RAG",
       "description": "Expands the user query into multiple variations to improve retrieval recall.",
-      "module": "src.chatbot.rags.query_expansion_rag",
+  "module": "chatbot.rags.query_expansion_rag",
       "enabled": true
     }
   }

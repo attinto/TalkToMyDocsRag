@@ -108,27 +108,43 @@ class ParentDocumentRAGPipeline:
         # The `retriever` here is the ParentDocumentRetriever. When invoked, it finds
         # the relevant child docs and returns their corresponding parent docs.
         chain = (
-            {"context": self.retriever | format_docs, "question": RunnablePassthrough()}
+            {"context": self.retriever, "question": RunnablePassthrough()}
             | prompt
             | llm
             | StrOutputParser()
         )
         return chain
 
-    def invoke(self, question: str) -> str:
+    def invoke(self, question: str) -> dict:
         """
         Invokes the RAG chain with a specific question.
+
+        Returns:
+            dict: A dictionary containing the answer and the retrieved context.
         """
-        return self.chain.invoke(question)
+        result = self.chain.invoke(question)
+        context = self.retriever.get_relevant_documents(question)
+        return {"answer": result, "context": context}
 
 
 # --- Entry point for the CLI ---
-def execute_rag(question: str) -> str:
+def execute_rag(question: str) -> dict:
     """
     Initializes and runs the Parent Document RAG pipeline.
+
+    Returns:
+        dict: A dictionary containing the answer and the retrieved context.
     """
+    # Module-level cache to avoid rebuilding retrievers/vectorstores repeatedly
+    global _PARENT_PIPELINE
     try:
-        pipeline = ParentDocumentRAGPipeline()
-        return pipeline.invoke(question)
+        _PARENT_PIPELINE
+    except NameError:
+        _PARENT_PIPELINE = None
+
+    try:
+        if _PARENT_PIPELINE is None:
+            _PARENT_PIPELINE = ParentDocumentRAGPipeline()
+        return _PARENT_PIPELINE.invoke(question)
     except Exception as e:
-        return f"An error occurred in the Parent Document RAG pipeline: {e}"
+        return {"answer": f"An error occurred in the Parent Document RAG pipeline: {e}", "context": []}

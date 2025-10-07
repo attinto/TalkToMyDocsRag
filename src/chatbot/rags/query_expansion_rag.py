@@ -104,12 +104,26 @@ class QueryExpansionRAGPipeline:
         )
         return chain
 
-    def invoke(self, question: str) -> str:
-        return self.chain.invoke(question)
+    def invoke(self, question: str) -> dict:
+        result = self.chain.invoke(question)
+        # The context is already part of the chain's execution, but we need to retrieve it separately for ragas
+        retriever = self.vector_store.as_retriever()
+        expansion_prompt = ChatPromptTemplate.from_template(QUERY_EXPANSION_RAG_CONFIG["expansion_prompt_template"])
+        llm = ChatOpenAI(model_name=GENERAL_CONFIG["model_name"])
+        expansion_chain = expansion_prompt | llm | StrOutputParser()
+        expanded_queries_str = expansion_chain.invoke({"question": question})
+        queries = [question] + expanded_queries_str.strip().split('\n')
+        docs = []
+        for q in queries:
+            docs.extend(retriever.invoke(q))
+        unique_docs = {doc.page_content: doc for doc in docs}
+        context = list(unique_docs.values())
+
+        return {"answer": result, "context": context}
 
 
 # --- Entry point for the CLI ---
-def execute_rag(question: str) -> str:
+def execute_rag(question: str) -> dict:
     """
     Initializes and runs the Query Expansion RAG pipeline.
     """
@@ -117,5 +131,5 @@ def execute_rag(question: str) -> str:
         pipeline = QueryExpansionRAGPipeline()
         return pipeline.invoke(question)
     except Exception as e:
-        return f"An error occurred in the Query Expansion RAG pipeline: {e}"
+        return {"answer": f"An error occurred in the Query Expansion RAG pipeline: {e}", "context": []}
 
