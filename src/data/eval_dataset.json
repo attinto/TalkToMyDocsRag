@@ -1,0 +1,70 @@
+[
+  {
+    "question": "How did Wendy learn that she would grow up?",
+    "ground_truth_answer": "Wendy knew she would grow up when her mother, Mrs. Darling, cried, 'Oh, why can’t you remain like this for ever!' while Wendy was playing in the garden.",
+    "ground_truth_context": [
+      "All children, except one, grow up. They soon know that they will grow up, and the way Wendy knew was this. One day when she was two years old she was playing in a garden, and she plucked another flower and ran with it to her mother. I suppose she must have looked rather delightful, for Mrs. Darling put her hand to her heart and cried, ‘Oh, why can’t you remain like this for ever!’ This was all that passed between them on the subject, but henceforth Wendy knew that she must grow up."
+    ],
+    "question_type": "factual",
+    "difficulty": "easy",
+    "expected_retrieval_pages": [1]
+  },
+  {
+    "question": "How did Captain Hook use deception to capture Peter, Wendy, and the lost boys?",
+    "ground_truth_answer": "Captain Hook surprised the redskins with an improper attack, defeating them and then used the tom-tom to trick Peter, Wendy, and the lost boys into thinking the redskins had won. The children, believing it was safe, prepared to come out, allowing the pirates to capture them.",
+    "ground_truth_context": [
+      "The pirate attack had been a complete surprise: a sure proof that the unscrupulous Hook had conducted it improperly, for to surprise redskins fairly is beyond the wit of the white man. ... The night’s work was not yet over, for it was not the redskins he had come out to destroy; they were but the bees to be smoked, so that he should get at the honey. It was Pan he wanted, Pan and Wendy and their band, but chiefly Pan.",
+      "If the redskins have won, they will beat the tom-tom; it is always their sign of victory. Now Smee had found the tom-tom, and was at that moment sitting on it. ... To his amazement Hook signed him to beat the tom-tom, and slowly there came to Smee an understanding of the dreadful wickedness of the order. ... The tom-tom, the miscreants heard Peter cry; 'an Indian victory!' The doomed children answered with a cheer that was music to the black hearts above, and almost immediately they repeated their good-byes to Peter. ... Rapidly and silently Hook gave his orders: one man to each tree, and the others to arrange themselves in a line two yards apart."
+    ],
+    "question_type": "analytical",
+    "difficulty": "medium",
+    "expected_retrieval_pages": [5]
+  }
+  ,
+  {
+    "question": "How did Peter Pan lose his shadow and how was it recovered?",
+    "ground_truth_answer": "Peter Pan lost his shadow when Nana closed the window quickly as he leapt out, snapping his shadow off. Mrs. Darling found the shadow and put it away in a drawer, and later, with Wendy's help, Peter's shadow was sewn back onto him.",
+    "ground_truth_context": [
+      "She returned to the nursery, and found Nana with something in her mouth, which proved to be the boy’s shadow. As he leapt at the window Nana had closed it quickly, too late to catch him, but his shadow had not had time to get out; slam went the window and snapped it off.",
+      "She decided to roll the shadow up and put it away carefully in a drawer, until a fitting opportunity came for telling her husband.",
+      "He tried to stick it on with soap from the bathroom, but that also failed. A shudder passed through Peter, and he sat on the floor and cried. His sobs woke Wendy, and she sat up in bed. ... Fortunately she knew at once what to do. 'It must be sewn on,' she said, just a little patronisingly. ... and she got out her housewife, and sewed the shadow on to Peter’s foot."
+    ],
+    "question_type": "factual",
+    "difficulty": "medium",
+    "expected_retrieval_pages": [2]
+  }
+  ,
+  {
+    "question": "How did Peter teach Wendy, John, and Michael to fly, and what challenges did they face on their way to Neverland?",
+    "ground_truth_answer": "Peter taught Wendy, John, and Michael to fly by blowing fairy dust on them and telling them to think lovely, wonderful thoughts. On their way to Neverland, they faced challenges such as bumping into clouds, falling asleep and dropping from the sky, and needing Peter's help to avoid danger. Peter sometimes forgot about them, and they had to remind him who they were. They also encountered pirates and other dangers as they approached Neverland.",
+    "ground_truth_context": [
+      "Of course Peter had been trifling with them, for no one can fly unless the fairy dust has been blown on him. Fortunately, as we have mentioned, one of his hands was messy with it, and he blew some on each of them, with the most superb results.",
+      "He showed them again. 'You’re so nippy at it,' John said, 'couldn’t you do it very slowly once?' Peter did it both slowly and quickly. 'I’ve got it now, Wendy!' cried John, but soon he found he had not. Not one of them could fly an inch, though even Michael was in words of two syllables, and Peter did not know A from Z.",
+      "At first his companions trusted him implicitly, and so great were the delights of flying that they wasted time circling round church spires or any other tall objects on the way that took their fancy. ... Certainly they did not pretend to be sleepy, they were sleepy; and that was a danger, for the moment they popped off, down they fell. The awful thing was that Peter thought this funny. ... Eventually Peter would dive through the air, and catch Michael just before he could strike the sea, and it was lovely the way he did it; but he always waited till the last moment, and you felt it was his cleverness that interested him and not the saving of human life. ... Indeed, sometimes when he returned he did not remember them, at least not well. Wendy was sure of it. She saw recognition come into his eyes as he was about to pass them the time of day and go on; once even she had to call him by name. 'I’m Wendy,' she said agitatedly. He was very sorry. 'I say, Wendy,' he whispered to her, 'always if you see me forgetting you, just keep on saying ‘I’m Wendy,’ and then I’ll remember.'"
+    ],
+    "question_type": "multi-hop",
+    "difficulty": "hard",
+    "expected_retrieval_pages": [3]
+  }
+  ,
+  {
+    "question": "Why does Captain Hook hate Peter Pan, and what is the significance of the crocodile?",
+    "ground_truth_answer": "Captain Hook hates Peter Pan because Peter cut off his arm and threw it to a crocodile, which now follows Hook everywhere, wanting to eat the rest of him. The crocodile swallowed a clock, so Hook can hear it coming by its ticking, but he fears that one day the clock will stop and the crocodile will finally get him.",
+    "ground_truth_context": [
+      "Most of all, Hook was saying passionately, 'I want their captain, Peter Pan. ’Twas he cut off my arm.' He brandished the hook threateningly. 'I’ve waited long to shake his hand with this. Oh, I’ll tear him!' ... 'Peter flung my arm,' he said, wincing, 'to a crocodile that happened to be passing by.' ... 'Not of crocodiles,' Hook corrected him, 'but of that one crocodile.' He lowered his voice. 'It liked my arm so much, Smee, that it has followed me ever since, from sea to sea and from land to land, licking its lips for the rest of me.' ... 'That crocodile would have had me before this, but by a lucky chance it swallowed a clock which goes tick tick inside it, and so before it can reach me I hear the tick and bolt.'"
+    ],
+    "question_type": "analytical",
+    "difficulty": "medium",
+    "expected_retrieval_pages": [4]
+  },
+  {
+    "question": "What happened when Wendy arrived in Neverland, and how did the lost boys respond?",
+    "ground_truth_answer": "When Wendy arrived in Neverland, Tinker Bell, out of jealousy, convinced the lost boys to shoot her with an arrow. Tootles shot Wendy, but she survived because the arrow struck the button (the 'kiss' Peter had given her) she wore around her neck. The boys, realizing their mistake, felt remorse and built a little house around Wendy to care for her.",
+    "ground_truth_context": [
+      "Tink’s reply rang out: 'Peter wants you to shoot the Wendy.' ... Tootles excitedly fitted the arrow to his bow. 'Out of the way, Tink,' he shouted, and then he fired, and Wendy fluttered to the ground with an arrow in her breast. ... 'See,' he said, 'the arrow struck against this. It is the kiss I gave her. It has saved her life.' ... 'Let us build a little house round her.' They were all delighted. 'Quick,' he ordered them, 'bring me each of you the best of what we have. Gut our house. Be sharp.' ... The house was quite beautiful, and no doubt Wendy was very cosy within, though, of course, they could no longer see her. Peter strode up and down, ordering finishing touches. ... He knocked politely, and now the wood was as still as the children, not a sound to be heard except from Tinker Bell, who was watching from a branch and openly sneering. ... The door opened and a lady came out. It was Wendy. They all whipped off their hats. She looked properly surprised, and this was just how they had hoped she would look. 'Where am I?' she said. Of course Slightly was the first to get his word in. 'Wendy lady,' he said rapidly, 'for you we built this house.'"
+    ],
+    "question_type": "multi-hop",
+    "difficulty": "hard",
+    "expected_retrieval_pages": [4]
+  }
+]

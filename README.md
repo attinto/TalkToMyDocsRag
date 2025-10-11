@@ -87,33 +87,149 @@ Experimenting with these configurations is highly encouraged to find the optimal
     export OPENAI_API_KEY='your_key_here'
     ```
 
+    Activate venv
+    source .venv/bin/activate
+
 ## How to Use
 
 The main entry point is `src/main.py`. You can run it as a module.
 
+### Answering Questions
+
 **Base Command:**
-`python -m src.main "<Your Question>" [OPTIONS]`
+`python -m src.main run "<Your Question>" [OPTIONS]`
 
 **Options:**
--   `-r`, `--rag-type TEXT`: Specify a RAG strategy to run (e.g., `basic`, `sentence`, `parent`, `merging`). Can be used multiple times.
--   `--all`: Run all enabled RAG strategies defined in `config.json`.
 
-### Examples
+- `-r, --rag-type TEXT`: Specify one or more RAG strategies to use (can be repeated)
+- `--all`: Run all enabled RAG strategies
 
-**Run a single RAG strategy:**
+**Examples:**
+
 ```bash
-python -m src.main "Who is Tinker Bell?" -r basic
+# Ask a question using a single RAG strategy
+python -m src.main run "How does Captain Hook describe Peter Pan?" -r basic
+
+# Compare multiple specific strategies
+python -m src.main run "How does Captain Hook describe Peter Pan?" -r basic -r sentence -r parent
+
+# Run all enabled strategies
+python -m src.main run "How does Captain Hook describe Peter Pan?" --all
 ```
 
-**Compare two specific strategies:**
+### Evaluating RAG Strategies
+
+The project includes a comprehensive evaluation system using the **RAGAS** (Retrieval Augmented Generation Assessment) framework. This allows you to objectively measure and compare the performance of different RAG strategies.
+
+**Evaluation Command:**
+`python -m src.main evaluate [OPTIONS]`
+
+**Options:**
+
+- `-s, --strategy TEXT`: Specify one or more RAG strategies to evaluate (can be repeated)
+- `--all`: Evaluate all enabled RAG strategies
+- `-o, --output TEXT`: Specify output file for the evaluation report (default: `evaluation_report.md`)
+
+**Examples:**
+
 ```bash
-python -m src.main "What did Wendy do with Peter's shadow?" -r basic -r sentence
+# Evaluate a single strategy
+python -m src.main evaluate -s basic
+
+# Evaluate multiple specific strategies
+python -m src.main evaluate -s basic -s hybrid -s parent
+
+# Evaluate all enabled strategies
+python -m src.main evaluate --all
+
+# Evaluate with custom output file
+python -m src.main evaluate --all -o my_results.md
 ```
 
-**Run all strategies for a complex question:**
-```bash
-python -m src.main "How does Wendy's perception of Peter Pan change from their first meeting to the end of the story?" --all
+### Understanding RAGAS Evaluation
+
+RAGAS provides four key metrics to evaluate RAG pipeline quality:
+
+#### 1. **Faithfulness (0-1, higher is better)**
+Measures if the answer is factually consistent with the retrieved context. This metric detects hallucinations and ensures the LLM doesn't make claims unsupported by the source material.
+
+- **High score**: Answer is well-grounded in the retrieved context
+- **Low score**: Answer contains information not present in the context (hallucination)
+
+#### 2. **Answer Relevancy (0-1, higher is better)**
+Measures how well the answer addresses the original question. A factually correct answer can still score low if it doesn't actually answer what was asked.
+
+- **High score**: Answer directly and completely addresses the question
+- **Low score**: Answer is off-topic or doesn't fully address the question
+
+#### 3. **Context Precision (0-1, higher is better)**
+Measures whether the retrieved contexts are relevant to answering the question. This evaluates the quality of your retrieval mechanism.
+
+- **High score**: Retrieved documents are highly relevant to the question
+- **Low score**: Many irrelevant documents were retrieved (noisy retrieval)
+
+#### 4. **Context Recall (0-1, higher is better)**
+Measures if all necessary information from the ground truth was successfully retrieved. This checks if your retrieval mechanism missed important context.
+
+- **High score**: All relevant information was retrieved
+- **Low score**: Important information was missed during retrieval
+
+### The Evaluation Dataset
+
+The evaluation uses a curated dataset in `src/data/eval_dataset.json` with 6 test questions covering:
+
+- **Factual questions** (easy/medium difficulty): Testing basic retrieval and comprehension
+- **Analytical questions** (medium difficulty): Testing understanding of relationships and reasoning
+- **Multi-hop questions** (hard difficulty): Testing ability to synthesize information from multiple sources
+
+Each test case includes:
+- The question
+- Ground truth answer
+- Ground truth context (exact passages from the source)
+- Question type and difficulty level
+- Expected retrieval information
+
+### Evaluation Output
+
+After running the evaluation, you'll get:
+
+1. **Console output** showing real-time progress and a summary table
+2. **Markdown report** with detailed metrics comparison and interpretation
+
+Example output:
+
 ```
+RAG Strategies Evaluation Report
+
+## Overall Metrics Comparison
+
+| Strategy              | Faithfulness | Answer Relevancy | Context Precision | Context Recall |
+|-----------------------|--------------|------------------|-------------------|----------------|
+| Basic RAG             | 0.850        | 0.780            | 0.720             | 0.810          |
+| Sentence Window RAG   | 0.880        | 0.820            | 0.790             | 0.760          |
+| Parent Document RAG   | 0.910        | 0.850            | 0.830             | 0.880          |
+```
+
+### How Evaluation Works
+
+1. **Load Test Dataset**: The evaluator loads questions from `src/data/eval_dataset.json`
+2. **Run Each Strategy**: For each test question, each RAG strategy generates an answer and retrieves contexts
+3. **RAGAS Scoring**: Using LLM-based evaluation, RAGAS compares:
+   - Generated answers vs. ground truth answers
+   - Retrieved contexts vs. ground truth contexts
+4. **Aggregate Metrics**: Scores are averaged across all questions to produce final metrics
+5. **Generate Report**: Results are formatted into an easy-to-read markdown report
+
+### Tips for Using Evaluation
+
+- **Start small**: Evaluate one or two strategies first to understand the metrics
+- **Iterate**: Use the metrics to guide parameter tuning in `src/chatbot/rags/rag_config.py`
+- **Compare**: Focus on relative performance between strategies rather than absolute scores
+- **Cost awareness**: RAGAS uses OpenAI API calls for evaluation, so testing all strategies on large datasets will incur costs
+
+---
+
+## More Notes on Advanced RAG Techniques
 
 ## More Notes on Advanced RAG Techniques
 
