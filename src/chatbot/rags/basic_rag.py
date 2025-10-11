@@ -138,6 +138,32 @@ class BasicRAGPipeline:
         """
         return self.chain.invoke(question)
 
+    def invoke_with_context(self, question: str) -> dict:
+        """
+        Invokes the RAG chain and returns both answer and retrieved contexts.
+        This is useful for evaluation purposes.
+
+        Args:
+            question (str): The user's question.
+
+        Returns:
+            dict: {"answer": str, "contexts": List[str]}
+        """
+        # Get the retriever and retrieve documents
+        retriever = self.vector_store.as_retriever()
+        retrieved_docs = retriever.invoke(question)
+        
+        # Extract the text content from each document
+        contexts = [doc.page_content for doc in retrieved_docs]
+        
+        # Get the answer
+        answer = self.chain.invoke(question)
+        
+        return {
+            "answer": answer,
+            "contexts": contexts
+        }
+
 
 # --- Entry point for the CLI ---
 # This function is called by `main.py`. It acts as an adapter between the
@@ -158,4 +184,26 @@ def execute_rag(question: str) -> str:
     except Exception as e:
         # Return a helpful error message if something goes wrong.
         return f"An error occurred in the Basic RAG pipeline: {e}"
+
+
+def execute_rag_with_context(question: str) -> dict:
+    """
+    Initializes and runs the Basic RAG pipeline with context retrieval.
+    Used for evaluation purposes.
+
+    Args:
+        question (str): The question to be answered.
+
+    Returns:
+        dict: {"answer": str, "contexts": List[str]}
+    """
+    try:
+        pipeline = BasicRAGPipeline()
+        return pipeline.invoke_with_context(question)
+    except Exception as e:
+        # Return error information
+        return {
+            "answer": f"An error occurred in the Basic RAG pipeline: {e}",
+            "contexts": []
+        }
 
