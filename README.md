@@ -87,6 +87,9 @@ Experimenting with these configurations is highly encouraged to find the optimal
     export OPENAI_API_KEY='your_key_here'
     ```
 
+    Activate venv
+    source .venv/bin/activate
+
 ## How to Use
 
 The main entry point is `src/main.py`. You can run it as a module.
